@@ -29,6 +29,7 @@ abstract class DataBaseHandler protected constructor(
 
     protected fun save(values: ContentValues?): Long {
         Log.i(this.tablename, "save")
+
         return this.writableDatabase.insert(tablename, null, values)
     }
 

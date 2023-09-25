@@ -15,8 +15,8 @@ class TouristSpotDatabaseHandler(context: Context) : DataBaseHandler(context, "t
                     "name TEXT NOT NULL," +
                     "description TEXT NOT NULL," +
                     "address TEXT NOT NULL," +
-                    "latitude FLOAT NOT NULL," +
-                    "longitute FLOAT NOT NULL);"
+                    "latitude FLOAT," +
+                    "longitute FLOAT);"
 
         )
     }
