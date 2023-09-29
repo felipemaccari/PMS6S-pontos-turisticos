@@ -9,8 +9,8 @@ class TouristSpot() {
     var name: String = ""
     var description: String = ""
     var address: String = ""
-    var latitude: Float = 0.0F
-    var longitute: Float = 0.0F
+    var latitude: String = ""
+    var longitude: String = ""
 
     constructor(
         database: DataBaseHandler, cursor: Cursor
@@ -19,7 +19,7 @@ class TouristSpot() {
         this.name = (database.getColumn(cursor, "name") ?: "")
         this.description = (database.getColumn(cursor, "description") ?: "")
         this.address = (database.getColumn(cursor, "address") ?: "")
-        this.latitude = ((database.getColumn(cursor, "latitude")?.toFloat() ?: 0.0).toFloat())
-        this.longitute = ((database.getColumn(cursor, "latitude")?.toFloat() ?: 0.0).toFloat())
+        this.latitude = (database.getColumn(cursor, "latitude") ?: "")
+        this.longitude = (database.getColumn(cursor, "longitude") ?: "")
     }
 }

@@ -15,8 +15,8 @@ class TouristSpotDatabaseHandler(context: Context) : DataBaseHandler(context, "t
                     "name TEXT NOT NULL," +
                     "description TEXT NOT NULL," +
                     "address TEXT NOT NULL," +
-                    "latitude FLOAT," +
-                    "longitute FLOAT);"
+                    "latitude TEXT," +
+                    "longitude TEXT);"
 
         )
     }
@@ -27,9 +27,7 @@ class TouristSpotDatabaseHandler(context: Context) : DataBaseHandler(context, "t
         registro.put("description", rel.description)
         registro.put("address", rel.address)
         registro.put("latitude", rel.latitude)
-        registro.put("longitute", rel.longitute)
-
-
+        registro.put("longitude", rel.longitude)
 
         return super.save(registro)
     }

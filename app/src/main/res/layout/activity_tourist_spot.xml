@@ -54,10 +54,20 @@
         android:id="@+id/btSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="Salvar"
+        android:layout_marginTop="180dp"
         android:onClick="saveOnClick"
+        android:text="Salvar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tiAddress" />
+
+    <ImageView
+        android:id="@+id/ivMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/btSave"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tiAddress"
+        app:srcCompat="@android:drawable/divider_horizontal_dark" />
 </androidx.constraintlayout.widget.ConstraintLayout>

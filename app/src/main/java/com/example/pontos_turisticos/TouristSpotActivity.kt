@@ -1,6 +1,9 @@
 package com.example.pontos_turisticos
 
 import android.content.SharedPreferences
+import android.graphics.BitmapFactory
+import android.location.Geocoder
+import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -12,6 +15,23 @@ import com.example.pontos_turisticos.databinding.ActivityTouristSpotBinding
 import com.example.pontos_turisticos.entidades.TouristSpot
 import com.example.pontos_turisticos.utils.ObjectUtils
 import com.google.android.material.textfield.TextInputEditText
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.readBytes
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.double
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import org.json.JSONObject
+import java.io.File
+import java.util.Locale
+import javax.net.ssl.HttpsURLConnection
 
 class TouristSpotActivity : AppCompatActivity() {
     private val binding by lazy { ActivityTouristSpotBinding.inflate(layoutInflater) }
@@ -23,6 +43,8 @@ class TouristSpotActivity : AppCompatActivity() {
     private lateinit var tiDescription : TextInputEditText
     private lateinit var tiAddress : TextInputEditText
     private lateinit var btSave : Button
+    private lateinit var ivMap : ImageView
+    private val apiKey = "AIzaSyBaxM8fm7w36VVjLCuz8sSxxWDQ7rbdECE"
 
     private lateinit var sharedPreferences : SharedPreferences
 
@@ -35,13 +57,13 @@ class TouristSpotActivity : AppCompatActivity() {
         tiDescription = findViewById(R.id.tiDescription);
         tiAddress = findViewById(R.id.tiAddress);
         btSave = findViewById(R.id.btSave);
+        ivMap = findViewById(R.id.ivMap)
 
         touristSpot._id = intent.getIntExtra("id", 0)
 
-//        if (touristSpot._id != 0) {
-//            binding.toolbar.title = getString(R.string.edit)
-//            findTouristPoint()
-//        }
+        if (touristSpot._id != 0) {
+            findTouristPoint()
+        }
     }
 
     private fun findTouristPoint() {
@@ -52,6 +74,27 @@ class TouristSpotActivity : AppCompatActivity() {
             tiDescription.setText(touristSpot.description)
             tiAddress.setText(touristSpot.address)
 
+            val client = HttpClient(CIO)
+
+            val zoom = 15
+            val size = "600x400"
+            val mapUrl = "https://maps.googleapis.com/maps/api/staticmap?center=${touristSpot.latitude},${touristSpot.longitude}&zoom=$zoom&size=$size&key=$apiKey"
+
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val response: HttpResponse = client.get(mapUrl)
+                    val bytes = response.readBytes()
+                    val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+
+                    CoroutineScope(Dispatchers.Main).launch {
+                        ivMap.setImageBitmap(bitmap)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    client.close()
+                }
+            }
         }
     }
 
@@ -61,9 +104,29 @@ class TouristSpotActivity : AppCompatActivity() {
             touristSpot.description = tiDescription.getText().toString().trim()
             touristSpot.address = tiAddress.getText().toString().trim()
 
-            intent.putExtra("op", "save")
-            touristSpotDatabaseHandler.save(touristSpot)
-            finish()
+            val apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=${touristSpot.address.replace(" ", "+")}&key=$apiKey"
+
+            val client = HttpClient(CIO)
+
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val response: String = client.get(apiUrl)
+                    val json = Json.parseToJsonElement(response).jsonObject
+                    val location = json["results"]!!.jsonArray[0].jsonObject["geometry"]!!.jsonObject["location"]!!.jsonObject
+                    val latitude = location["lat"]!!.jsonPrimitive.double
+                    val longitude = location["lng"]!!.jsonPrimitive.double
+                    touristSpot.latitude = latitude.toString()
+                    touristSpot.longitude = longitude.toString()
+
+                    touristSpotDatabaseHandler.save(touristSpot)
+
+                    finish()
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    client.close()
+                }
+            }
         }
     }
 

@@ -21,21 +21,19 @@
     </com.google.android.material.appbar.AppBarLayout>
 
     <androidx.recyclerview.widget.RecyclerView
+        android:layout_marginTop="64dp"
         android:id="@+id/rview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/card_tourist_spot" />
+        tools:listitem="@layout/card_tourist_spot"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
 
-    <include
-        layout="@layout/content_main"
-        android:layout_height="668dp" />
+    <include layout="@layout/content_main" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab"
