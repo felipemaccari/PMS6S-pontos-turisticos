@@ -1,8 +1,9 @@
 package com.example.pontos_turisticos
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -11,12 +12,27 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.example.pontos_turisticos.adapter.ListTouristSpotAdpter
+import com.example.pontos_turisticos.adapter.OnListTouristSpotAdapterClickListener
+import com.example.pontos_turisticos.dao.TouristSpotDatabaseHandler
 import com.example.pontos_turisticos.databinding.ActivityMainBinding
+import com.example.pontos_turisticos.entidades.TouristSpot
+import com.example.pontos_turisticos.utils.ObjectUtils
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private val touristSpotDatabaseHandler by lazy { TouristSpotDatabaseHandler(this) }
+    private val listAdapter by lazy {
+        ListTouristSpotAdpter(this, findAllTouristSpot(), object : OnListTouristSpotAdapterClickListener {
+            override fun onItemClick(touristSpot: TouristSpot) {
+                val intentNew = Intent(this@MainActivity, TouristSpotActivity::class.java)
+                intentNew.putExtra("id", touristSpot._id)
+                startActivity(intentNew)
+            }
+        })
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,9 +43,13 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.appBarMain.toolbar)
 
         binding.appBarMain.fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                .setAction("Action", null).show()
+            val intent = Intent(this, TouristSpotActivity::class.java)
+            startActivity(intent)
         }
+
+        binding.appBarMain.rview.adapter = listAdapter
+
+//        binding.contentMain.rview.adapter = listAdapter
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
@@ -54,4 +74,21 @@ class MainActivity : AppCompatActivity() {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+    override fun onResume() {
+        Log.i(this.localClassName, "onResume")
+        super.onResume()
+    }
+
+    fun findAllTouristSpot(): List<TouristSpot>{
+        val cursor = touristSpotDatabaseHandler.findList()
+        val touristSpots = mutableListOf<TouristSpot>()
+        if (ObjectUtils.isNotEmpty(cursor)) {
+            while (cursor!!.moveToNext()) {
+                touristSpots.add(TouristSpot(touristSpotDatabaseHandler, cursor))
+            }
+        }
+        return touristSpots
+    }
+
+
 }
