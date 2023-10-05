@@ -2,6 +2,7 @@ package com.example.pontos_turisticos.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -20,13 +21,15 @@ class ListTouristSpotAdpter (
         private val description = binding.tvSpotDescription
         private val latitude = binding.tvSpotLatitude
         private val longitude = binding.tvSpotLongitude
+        //private val spotPhoto = binding.ivSpotImage
 
         fun bind(touristSpot: TouristSpot) {
             name.text = touristSpot.name
             description.text = touristSpot.description
             latitude.text = touristSpot.latitude
             longitude.text = touristSpot.longitude
-
+            // val bitmap = BitmapFactory.decodeByteArray(touristSpot.spotImage, 0, touristSpot.spotImage.size)
+            //spotPhoto.setImageBitmap(bitmap)
         }
     }
 

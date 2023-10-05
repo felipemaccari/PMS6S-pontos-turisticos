@@ -1,16 +1,16 @@
 package com.example.pontos_turisticos
 
-import android.content.Context
-import android.content.SharedPreferences
+import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.location.Geocoder
-import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import androidx.activity.result.contract.ActivityResultContracts
 import com.example.pontos_turisticos.dao.TouristSpotDatabaseHandler
 import com.example.pontos_turisticos.databinding.ActivityTouristSpotBinding
 import com.example.pontos_turisticos.entidades.TouristSpot
@@ -30,26 +30,30 @@ import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import org.json.JSONObject
-import java.io.File
-import java.util.Locale
-import javax.net.ssl.HttpsURLConnection
+import java.io.ByteArrayOutputStream
 
 class TouristSpotActivity : AppCompatActivity() {
     private val binding by lazy { ActivityTouristSpotBinding.inflate(layoutInflater) }
     private val touristSpotDatabaseHandler by lazy { TouristSpotDatabaseHandler(this) }
     private var touristSpot: TouristSpot = TouristSpot()
     private var isFormDirt: Boolean = false
-
+    private var capturedImage: Bitmap? = null
     private lateinit var tiName : TextInputEditText
     private lateinit var tiDescription : TextInputEditText
     private lateinit var tiAddress : TextInputEditText
     private lateinit var btSave : Button
+    private lateinit var btnGetPhoto: Button
     private lateinit var ivMap : ImageView
+    private lateinit var ivSpotPhoto : ImageView
     private val apiKey = "AIzaSyBaxM8fm7w36VVjLCuz8sSxxWDQ7rbdECE"
-
-    private lateinit var sharedPreferences : SharedPreferences
-
+    private var register =
+        registerForActivityResult(ActivityResultContracts.TakePicturePreview()) {
+                image: Bitmap? -> image?.let {
+                    capturedImage = image
+                    val ivFoto = findViewById<ImageView>(R.id.ivSpotPhoto)
+                    ivFoto.setImageBitmap(image)
+                }
+        }
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -60,7 +64,9 @@ class TouristSpotActivity : AppCompatActivity() {
         tiDescription = findViewById(R.id.tiDescription);
         tiAddress = findViewById(R.id.tiAddress);
         btSave = findViewById(R.id.btSave);
+        btnGetPhoto = findViewById(R.id.btnGetPhoto)
         ivMap = findViewById(R.id.ivMap)
+        ivSpotPhoto = findViewById(R.id.ivSpotPhoto)
 
         touristSpot._id = intent.getIntExtra("id", 0)
 
@@ -102,11 +108,25 @@ class TouristSpotActivity : AppCompatActivity() {
         }
     }
 
+    private fun convertBitmapToByteArray(bitmap: Bitmap?): ByteArray? {
+        if (bitmap == null) {
+            return null
+        }
+        val stream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
+        return stream.toByteArray()
+    }
+
     fun saveOnClick(view: View) {
         if (validateForm()) {
             touristSpot.name = tiName.getText().toString().trim()
             touristSpot.description = tiDescription.getText().toString().trim()
             touristSpot.address = tiAddress.getText().toString().trim()
+
+            val imageByteArray = convertBitmapToByteArray(capturedImage)
+            if (imageByteArray != null) {
+                touristSpot.spotImage = imageByteArray
+            }
 
             val apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=${touristSpot.address.replace(" ", "+")}&key=$apiKey"
 
@@ -188,5 +208,10 @@ class TouristSpotActivity : AppCompatActivity() {
             "Campo \"Endereço\" é ${if (notIsValid) "Inválido" else "Válido"}"
         )
         return !notIsValid
+    }
+
+    fun btnGetPhotoOnClick(view: View) {
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).let { register.launch(null) }
+
     }
 }
