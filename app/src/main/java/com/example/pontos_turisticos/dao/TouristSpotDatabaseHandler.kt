@@ -29,6 +29,10 @@ class TouristSpotDatabaseHandler(context: Context) : DataBaseHandler(context, "t
         registro.put("latitude", rel.latitude)
         registro.put("longitude", rel.longitude)
 
-        return super.save(registro)
+        if(rel._id == 0){
+            return  super.save(registro)
+        } else{
+            return super.update(registro, rel._id).toLong()
+        }
     }
 }

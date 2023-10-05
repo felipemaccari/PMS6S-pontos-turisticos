@@ -1,5 +1,6 @@
 package com.example.pontos_turisticos
 
+import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.BitmapFactory
 import android.location.Geocoder
@@ -13,6 +14,7 @@ import android.widget.ImageView
 import com.example.pontos_turisticos.dao.TouristSpotDatabaseHandler
 import com.example.pontos_turisticos.databinding.ActivityTouristSpotBinding
 import com.example.pontos_turisticos.entidades.TouristSpot
+import com.example.pontos_turisticos.util.Util
 import com.example.pontos_turisticos.utils.ObjectUtils
 import com.google.android.material.textfield.TextInputEditText
 import io.ktor.client.HttpClient
@@ -49,6 +51,7 @@ class TouristSpotActivity : AppCompatActivity() {
     private lateinit var sharedPreferences : SharedPreferences
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tourist_spot)
@@ -64,6 +67,7 @@ class TouristSpotActivity : AppCompatActivity() {
         if (touristSpot._id != 0) {
             findTouristPoint()
         }
+
     }
 
     private fun findTouristPoint() {
@@ -122,6 +126,7 @@ class TouristSpotActivity : AppCompatActivity() {
 
                     finish()
                 } catch (e: Exception) {
+                    Util.setToast(applicationContext,"Endereço inválido")
                     e.printStackTrace()
                 } finally {
                     client.close()
