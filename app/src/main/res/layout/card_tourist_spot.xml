@@ -1,58 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_margin="@dimen/default_margin">
+        android:layout_height="match_parent"
+        android:paddingBottom="16dp">
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/latitude"
+        <ImageView
+            android:id="@+id/ivSpotImage"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:hint="@string/description"
-            tools:ignore="HardcodedText" />
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@tools:sample/avatars" />
 
         <TextView
-            android:id="@+id/longitude"
+            android:id="@+id/tvSpotName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ellipsize="end"
-            android:hint="@string/description"
-            tools:ignore="HardcodedText" />
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:hint="Nome do spot"
+            android:textSize="24sp"
+            app:layout_constraintStart_toEndOf="@+id/ivSpotImage"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/default_margin"
-                android:orientation="vertical">
+        <TextView
+            android:id="@+id/tvSpotDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:hint="Descrição do spot"
+            android:textSize="18dp"
+            app:layout_constraintStart_toEndOf="@+id/ivSpotImage"
+            app:layout_constraintTop_toBottomOf="@+id/tvSpotName" />
 
-            <TextView
-                    android:id="@+id/name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/name"
-                    android:layout_marginTop="20dp"
-                    android:ellipsize="end"/>
+        <TextView
+            android:id="@+id/tvSpotLatitudeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:hint=""
+            android:text="Latitude: "
+            app:layout_constraintStart_toEndOf="@+id/ivSpotImage"
+            app:layout_constraintTop_toBottomOf="@+id/tvSpotDescription" />
 
-            <TextView
-                    android:id="@+id/description"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/description"
-                    android:ellipsize="end"
-                    tools:ignore="HardcodedText" />
+        <TextView
+            android:id="@+id/tvSpotLatitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="Latitude"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@+id/tvSpotLatitudeLabel"
+            app:layout_constraintTop_toTopOf="@+id/tvSpotLatitudeLabel" />
 
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvSpotLongitudeLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:text="Longitude: "
+            app:layout_constraintStart_toEndOf="@+id/ivSpotImage"
+            app:layout_constraintTop_toBottomOf="@+id/tvSpotLatitudeLabel" />
 
-    </LinearLayout>
+        <TextView
+            android:id="@+id/tvSpotLongitude"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:hint="Longitude"
+            app:layout_constraintStart_toEndOf="@+id/tvSpotLongitudeLabel"
+            app:layout_constraintTop_toTopOf="@+id/tvSpotLongitudeLabel" />
 
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.cardview.widget.CardView>

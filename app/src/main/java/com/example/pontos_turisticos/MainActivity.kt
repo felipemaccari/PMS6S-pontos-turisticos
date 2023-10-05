@@ -77,6 +77,9 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         Log.i(this.localClassName, "onResume")
         super.onResume()
+
+        val updatedTouristSpots = findAllTouristSpot()
+        listAdapter.refresh(updatedTouristSpots)
     }
 
     fun findAllTouristSpot(): List<TouristSpot>{

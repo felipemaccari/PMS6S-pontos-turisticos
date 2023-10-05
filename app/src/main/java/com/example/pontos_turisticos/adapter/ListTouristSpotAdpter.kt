@@ -16,10 +16,10 @@ class ListTouristSpotAdpter (
     private val touristSpots = touristSpots.toMutableList()
 
     class ViewHolder(binding: CardTouristSpotBinding) : RecyclerView.ViewHolder(binding.root) {
-        private val name = binding.name
-        private val description = binding.description
-        private val latitude = binding.latitude
-        private val longitude = binding.longitude
+        private val name = binding.tvSpotName
+        private val description = binding.tvSpotDescription
+        private val latitude = binding.tvSpotLatitude
+        private val longitude = binding.tvSpotLongitude
 
         fun bind(touristSpot: TouristSpot) {
             name.text = touristSpot.name
