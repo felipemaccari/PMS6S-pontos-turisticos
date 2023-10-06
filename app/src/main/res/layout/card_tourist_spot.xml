@@ -43,44 +43,25 @@
             app:layout_constraintTop_toBottomOf="@+id/tvSpotName" />
 
         <TextView
-            android:id="@+id/tvSpotLatitudeLabel"
+            android:id="@+id/tvSpotAddressLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:hint=""
-            android:text="Latitude: "
+            android:text="Endereço: "
             app:layout_constraintStart_toEndOf="@+id/ivSpotImage"
             app:layout_constraintTop_toBottomOf="@+id/tvSpotDescription" />
 
         <TextView
-            android:id="@+id/tvSpotLatitude"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:hint="Latitude"
+            android:id="@+id/tvSpotAddress"
+            android:layout_width="174dp"
+            android:layout_height="19dp"
             android:layout_marginStart="8dp"
-            app:layout_constraintStart_toEndOf="@+id/tvSpotLatitudeLabel"
-            app:layout_constraintTop_toTopOf="@+id/tvSpotLatitudeLabel" />
-
-        <TextView
-            android:id="@+id/tvSpotLongitudeLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="8dp"
-            android:text="Longitude: "
-            app:layout_constraintStart_toEndOf="@+id/ivSpotImage"
-            app:layout_constraintTop_toBottomOf="@+id/tvSpotLatitudeLabel" />
-
-        <TextView
-            android:id="@+id/tvSpotLongitude"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:hint="Longitude"
-            app:layout_constraintStart_toEndOf="@+id/tvSpotLongitudeLabel"
-            app:layout_constraintTop_toTopOf="@+id/tvSpotLongitudeLabel" />
+            android:hint="Endereço"
+            app:layout_constraintStart_toEndOf="@+id/tvSpotAddressLabel"
+            app:layout_constraintTop_toTopOf="@+id/tvSpotAddressLabel" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,15 +20,13 @@ class ListTouristSpotAdpter (
     class ViewHolder(binding: CardTouristSpotBinding) : RecyclerView.ViewHolder(binding.root) {
         private val name = binding.tvSpotName
         private val description = binding.tvSpotDescription
-        private val latitude = binding.tvSpotLatitude
-        private val longitude = binding.tvSpotLongitude
+        private val address = binding.tvSpotAddress
         private val spotImage = binding.ivSpotImage
 
         fun bind(touristSpot: TouristSpot) {
             name.text = touristSpot.name
             description.text = touristSpot.description
-            latitude.text = touristSpot.latitude
-            longitude.text = touristSpot.longitude
+            address.text = touristSpot.address
             val bitmap: Bitmap? = touristSpot.spotImage?.let { BitmapFactory.decodeByteArray(it, 0, it.size) }
             spotImage.setImageBitmap(bitmap)
         }

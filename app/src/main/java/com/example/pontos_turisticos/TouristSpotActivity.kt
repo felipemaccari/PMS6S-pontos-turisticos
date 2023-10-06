@@ -1,6 +1,7 @@
 package com.example.pontos_turisticos
 
 import android.Manifest
+import android.app.DownloadManager.Request
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -32,6 +33,7 @@ import io.ktor.client.statement.readBytes
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
@@ -54,6 +56,7 @@ class TouristSpotActivity : AppCompatActivity(), LocationListener {
     private lateinit var btnGetPhoto: Button
     private lateinit var ivMap : ImageView
     private lateinit var ivSpotPhoto : ImageView
+    private lateinit var formattedAddress : String
     private val apiKey = "AIzaSyCi_c4q90raXN_EEgmQ21-I0ya4nsQvkpY"
     private var register =
         registerForActivityResult(ActivityResultContracts.TakePicturePreview()) {
@@ -94,7 +97,7 @@ class TouristSpotActivity : AppCompatActivity(), LocationListener {
             if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
                 ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 2)
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
+            locationManager.requestLocationUpdates( LocationManager.NETWORK_PROVIDER, 0,  0f, this )
         }
 
         if (touristSpot._id != 0) {
@@ -105,6 +108,7 @@ class TouristSpotActivity : AppCompatActivity(), LocationListener {
     override fun onLocationChanged(p0: Location) {
         latitude = p0.latitude.toString()
         longitude = p0.longitude.toString()
+        getAddressFromCoordinates()
     }
 
     private fun findTouristPoint() {
@@ -139,6 +143,30 @@ class TouristSpotActivity : AppCompatActivity(), LocationListener {
         }
     }
 
+    private fun getAddressFromCoordinates() {
+        val client = HttpClient(CIO)
+        val apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?latlng=$latitude,$longitude&key=$apiKey"
+        CoroutineScope(Dispatchers.IO).launch {
+            val response: String = client.get(apiUrl)
+            val json = Json.parseToJsonElement(response).jsonObject
+
+            val results = json["results"]!!.jsonArray
+            if (results.isNotEmpty()) {
+                formattedAddress = results[0].jsonObject["formatted_address"]!!.jsonPrimitive.content
+                updateUI(formattedAddress)
+                val pele = 1
+            } else {
+                // Não foram encontrados resultados
+            }
+        }
+    }
+
+    private suspend fun updateUI(address: String) {
+        withContext(Dispatchers.Main) {
+            tiAddress.setText(address)
+        }
+    }
+
     private fun convertBitmapToByteArray(bitmap: Bitmap?): ByteArray? {
         if (bitmap == null) {
             return null
@@ -161,29 +189,27 @@ class TouristSpotActivity : AppCompatActivity(), LocationListener {
                 touristSpot.spotImage = imageByteArray
             }
 
-            if (latitude == null || longitude == null){
-                val apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=${touristSpot.address.replace(" ", "+")}&key=$apiKey"
+            val apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=${touristSpot.address.replace(" ", "+")}&key=$apiKey"
 
-                val client = HttpClient(CIO)
+            val client = HttpClient(CIO)
 
-                CoroutineScope(Dispatchers.IO).launch {
-                    try {
-                        val response: String = client.get(apiUrl)
-                        val json = Json.parseToJsonElement(response).jsonObject
-                        val location = json["results"]!!.jsonArray[0].jsonObject["geometry"]!!.jsonObject["location"]!!.jsonObject
-                        val latitude = location["lat"]!!.jsonPrimitive.double
-                        val longitude = location["lng"]!!.jsonPrimitive.double
-                        touristSpot.latitude = latitude.toString()
-                        touristSpot.longitude = longitude.toString()
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val response: String = client.get(apiUrl)
+                    val json = Json.parseToJsonElement(response).jsonObject
+                    val location = json["results"]!!.jsonArray[0].jsonObject["geometry"]!!.jsonObject["location"]!!.jsonObject
+                    val new_latitude = location["lat"]!!.jsonPrimitive.double
+                    val new_longitude = location["lng"]!!.jsonPrimitive.double
+                    touristSpot.latitude = new_latitude.toString()
+                    touristSpot.longitude = new_longitude.toString()
 
-                        touristSpotDatabaseHandler.save(touristSpot)
+                    touristSpotDatabaseHandler.save(touristSpot)
+                    finish()
 
-                        finish()
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    } finally {
-                        client.close()
-                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                } finally {
+                    client.close()
                 }
             }
         }
