@@ -1,8 +1,14 @@
 package com.example.pontos_turisticos
 
+import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.LocationManager
+import android.location.Location
+import android.location.LocationListener
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -11,11 +17,18 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
+<<<<<<< Updated upstream
 import com.example.pontos_turisticos.activities.SettingsActivity
 import com.example.pontos_turisticos.dao.TouristSpotDatabaseHandler
 import com.example.pontos_turisticos.databinding.ActivityTouristSpotBinding
 import com.example.pontos_turisticos.entidades.TouristSpot
 import com.example.pontos_turisticos.utils.Util
+=======
+import androidx.core.app.ActivityCompat
+import com.example.pontos_turisticos.dao.TouristSpotDatabaseHandler
+import com.example.pontos_turisticos.databinding.ActivityTouristSpotBinding
+import com.example.pontos_turisticos.entidades.TouristSpot
+>>>>>>> Stashed changes
 import com.example.pontos_turisticos.utils.ObjectUtils
 import com.google.android.material.textfield.TextInputEditText
 import io.ktor.client.HttpClient
@@ -31,9 +44,10 @@ import kotlinx.serialization.json.double
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import org.slf4j.helpers.Util
 import java.io.ByteArrayOutputStream
 
-class TouristSpotActivity : AppCompatActivity() {
+class TouristSpotActivity : AppCompatActivity(), LocationListener {
     private val binding by lazy { ActivityTouristSpotBinding.inflate(layoutInflater) }
     private val touristSpotDatabaseHandler by lazy { TouristSpotDatabaseHandler(this) }
     private var touristSpot: TouristSpot = TouristSpot()
@@ -46,7 +60,7 @@ class TouristSpotActivity : AppCompatActivity() {
     private lateinit var btnGetPhoto: Button
     private lateinit var ivMap : ImageView
     private lateinit var ivSpotPhoto : ImageView
-    private val apiKey = "AIzaSyBaxM8fm7w36VVjLCuz8sSxxWDQ7rbdECE"
+    private val apiKey = "AIzaSyCi_c4q90raXN_EEgmQ21-I0ya4nsQvkpY"
     private var register =
         registerForActivityResult(ActivityResultContracts.TakePicturePreview()) {
                 image: Bitmap? -> image?.let {
@@ -55,6 +69,11 @@ class TouristSpotActivity : AppCompatActivity() {
                     ivFoto.setImageBitmap(image)
                 }
         }
+
+    private var latitude : String? = null
+    private var longitude : String? = null
+
+    private lateinit var locationManager : LocationManager
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,10 +90,31 @@ class TouristSpotActivity : AppCompatActivity() {
 
         touristSpot._id = intent.getIntExtra("id", 0)
 
+        if (touristSpot._id == 0){
+            locationManager = getSystemService( Context.LOCATION_SERVICE) as LocationManager
+
+            if (ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                return
+            }
+
+            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, this)
+        }
+
         if (touristSpot._id != 0) {
             findTouristPoint()
         }
+    }
 
+    override fun onLocationChanged(p0: Location) {
+        latitude = p0.latitude.toString()
+        longitude = p0.longitude.toString()
     }
 
     private fun findTouristPoint() {
@@ -123,34 +163,37 @@ class TouristSpotActivity : AppCompatActivity() {
             touristSpot.name = tiName.getText().toString().trim()
             touristSpot.description = tiDescription.getText().toString().trim()
             touristSpot.address = tiAddress.getText().toString().trim()
+            touristSpot.latitude = latitude.toString()
+            touristSpot.longitude = longitude.toString()
 
             val imageByteArray = convertBitmapToByteArray(capturedImage)
             if (imageByteArray != null) {
                 touristSpot.spotImage = imageByteArray
             }
 
-            val apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=${touristSpot.address.replace(" ", "+")}&key=$apiKey"
+            if (latitude == null || longitude == null){
+                val apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address=${touristSpot.address.replace(" ", "+")}&key=$apiKey"
 
-            val client = HttpClient(CIO)
+                val client = HttpClient(CIO)
 
-            CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    val response: String = client.get(apiUrl)
-                    val json = Json.parseToJsonElement(response).jsonObject
-                    val location = json["results"]!!.jsonArray[0].jsonObject["geometry"]!!.jsonObject["location"]!!.jsonObject
-                    val latitude = location["lat"]!!.jsonPrimitive.double
-                    val longitude = location["lng"]!!.jsonPrimitive.double
-                    touristSpot.latitude = latitude.toString()
-                    touristSpot.longitude = longitude.toString()
+                CoroutineScope(Dispatchers.IO).launch {
+                    try {
+                        val response: String = client.get(apiUrl)
+                        val json = Json.parseToJsonElement(response).jsonObject
+                        val location = json["results"]!!.jsonArray[0].jsonObject["geometry"]!!.jsonObject["location"]!!.jsonObject
+                        val latitude = location["lat"]!!.jsonPrimitive.double
+                        val longitude = location["lng"]!!.jsonPrimitive.double
+                        touristSpot.latitude = latitude.toString()
+                        touristSpot.longitude = longitude.toString()
 
-                    touristSpotDatabaseHandler.save(touristSpot)
+                        touristSpotDatabaseHandler.save(touristSpot)
 
-                    finish()
-                } catch (e: Exception) {
-                    Util.setToast(applicationContext,"Endereço inválido")
-                    e.printStackTrace()
-                } finally {
-                    client.close()
+                        finish()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    } finally {
+                        client.close()
+                    }
                 }
             }
         }
@@ -158,7 +201,7 @@ class TouristSpotActivity : AppCompatActivity() {
 
 
     private fun validateForm(): Boolean {
-        return validateName() && validateDescription() && validateAddress() && isFormDirt
+        return validateName() && validateDescription() && isFormDirt
     }
 
     private fun validateName(): Boolean {
