@@ -17,18 +17,10 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
-<<<<<<< Updated upstream
-import com.example.pontos_turisticos.activities.SettingsActivity
 import com.example.pontos_turisticos.dao.TouristSpotDatabaseHandler
 import com.example.pontos_turisticos.databinding.ActivityTouristSpotBinding
 import com.example.pontos_turisticos.entidades.TouristSpot
-import com.example.pontos_turisticos.utils.Util
-=======
 import androidx.core.app.ActivityCompat
-import com.example.pontos_turisticos.dao.TouristSpotDatabaseHandler
-import com.example.pontos_turisticos.databinding.ActivityTouristSpotBinding
-import com.example.pontos_turisticos.entidades.TouristSpot
->>>>>>> Stashed changes
 import com.example.pontos_turisticos.utils.ObjectUtils
 import com.google.android.material.textfield.TextInputEditText
 import io.ktor.client.HttpClient
