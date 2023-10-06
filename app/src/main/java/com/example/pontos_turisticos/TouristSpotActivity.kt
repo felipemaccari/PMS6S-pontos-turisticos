@@ -11,10 +11,11 @@ import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.result.contract.ActivityResultContracts
+import com.example.pontos_turisticos.activities.SettingsActivity
 import com.example.pontos_turisticos.dao.TouristSpotDatabaseHandler
 import com.example.pontos_turisticos.databinding.ActivityTouristSpotBinding
 import com.example.pontos_turisticos.entidades.TouristSpot
-import com.example.pontos_turisticos.util.Util
+import com.example.pontos_turisticos.utils.Util
 import com.example.pontos_turisticos.utils.ObjectUtils
 import com.google.android.material.textfield.TextInputEditText
 import io.ktor.client.HttpClient
@@ -154,6 +155,7 @@ class TouristSpotActivity : AppCompatActivity() {
             }
         }
     }
+
 
     private fun validateForm(): Boolean {
         return validateName() && validateDescription() && validateAddress() && isFormDirt

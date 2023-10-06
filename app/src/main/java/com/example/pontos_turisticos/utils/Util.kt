@@ -1,4 +1,4 @@
-package com.example.pontos_turisticos.util
+package com.example.pontos_turisticos.utils
 
 import android.content.Context
 import android.widget.Toast
