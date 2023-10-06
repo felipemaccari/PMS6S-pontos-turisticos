@@ -21,6 +21,7 @@ import com.example.pontos_turisticos.dao.TouristSpotDatabaseHandler
 import com.example.pontos_turisticos.databinding.ActivityTouristSpotBinding
 import com.example.pontos_turisticos.entidades.TouristSpot
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.example.pontos_turisticos.utils.ObjectUtils
 import com.google.android.material.textfield.TextInputEditText
 import io.ktor.client.HttpClient
@@ -89,20 +90,11 @@ class TouristSpotActivity : AppCompatActivity(), LocationListener {
         }
 
         if (touristSpot._id == 0){
-            locationManager = getSystemService( Context.LOCATION_SERVICE) as LocationManager
-
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.ACCESS_COARSE_LOCATION
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                return
+            locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+            if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)) {
+                ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 2)
             }
-
-            locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, 0f, this)
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 5f, this)
         }
 
         if (touristSpot._id != 0) {
