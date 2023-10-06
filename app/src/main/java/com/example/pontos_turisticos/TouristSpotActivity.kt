@@ -49,6 +49,7 @@ class TouristSpotActivity : AppCompatActivity(), LocationListener {
     private lateinit var tiDescription : TextInputEditText
     private lateinit var tiAddress : TextInputEditText
     private lateinit var btSave : Button
+    private lateinit var btnExcluir : Button
     private lateinit var btnGetPhoto: Button
     private lateinit var ivMap : ImageView
     private lateinit var ivSpotPhoto : ImageView
@@ -79,8 +80,13 @@ class TouristSpotActivity : AppCompatActivity(), LocationListener {
         btnGetPhoto = findViewById(R.id.btnGetPhoto)
         ivMap = findViewById(R.id.ivMap)
         ivSpotPhoto = findViewById(R.id.ivSpotPhoto)
+        btnExcluir = findViewById(R.id.btnExcluir)
 
         touristSpot._id = intent.getIntExtra("id", 0)
+
+        if (touristSpot._id == 0){
+            btnExcluir.visibility = View.GONE
+        }
 
         if (touristSpot._id == 0){
             locationManager = getSystemService( Context.LOCATION_SERVICE) as LocationManager
@@ -193,7 +199,7 @@ class TouristSpotActivity : AppCompatActivity(), LocationListener {
 
 
     private fun validateForm(): Boolean {
-        return validateName() && validateDescription() && isFormDirt
+        return validateName() && validateDescription() && validateAddress() && isFormDirt
     }
 
     private fun validateName(): Boolean {
@@ -250,5 +256,12 @@ class TouristSpotActivity : AppCompatActivity(), LocationListener {
     fun btnGetPhotoOnClick(view: View) {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE).let { register.launch(null) }
 
+    }
+
+    fun excluirOnclick(view: View) {
+        if(touristSpot._id != 0){
+            touristSpotDatabaseHandler.delete(touristSpot._id)
+            finish()
+        }
     }
 }
